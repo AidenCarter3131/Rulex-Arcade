@@ -1,1 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rulex's Arcade</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1020;
+            color: #f5f5f5;
+            margin: 0;
+        }
 
+        header {
+            background: #1b2340;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav {
+            background: #141a33;
+            padding: 10px 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        nav a {
+            color: #f5f5f5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        section {
+            background: #1b2340;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        section h2 {
+            margin-top: 0;
+        }
+
+        .card-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card-list li {
+            margin-bottom: 8px;
+        }
+
+        .card-list a {
+            color: #9fd3ff;
+            text-decoration: none;
+        }
+
+        .card-list a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #141a33;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Rulex's Arcade</h1>
+        <p>Your hub for games, links, and movies/shows (placeholder version)</p>
+    </header>
+
+    <nav>
+        <a href="#games">Games</a>
+        <a href="#links">Links</a>
+        <a href="#movies">Movies/Shows</a>
+    </nav>
+
+    <main>
+        <!-- Games Section -->
+        <section id="games">
+            <h2>Games</h2>
+            <p>Placeholder games you can later replace with real ones.</p>
+            <ul class="card-list">
+                <li><a href="#">Space Blaster (Coming Soon)</a></li>
+                <li><a href="#">Pixel Racer (Coming Soon)</a></li>
+                <li><a href="#">Rulex Quest RPG (Coming Soon)</a></li>
+            </ul>
+        </section>
+
+        <!-- Links Section -->
+        <section id="links">
+            <h2>Cool Links</h2>
+            <p>Random placeholder links for now.</p>
+            <ul class="card-list">
+                <li><a href="#">Official Rulex's Arcade Discord (Placeholder)</a></li>
+                <li><a href="#">High Score Leaderboard (Placeholder)</a></li>
+                <li><a href="#">Support & FAQ (Placeholder)</a></li>
+            </ul>
+        </section>
+
+        <!-- Movies/Shows Section -->
+        <section id="movies">
+            <h2>Movies & Shows</h2>
+            <p>Placeholder list of movies and shows you might feature.</p>
+            <ul class="card-list">
+                <li><a href="#">Arcade Legends: The Movie (Placeholder)</a></li>
+                <li><a href="#">Rulex's Retro Night Show (Placeholder)</a></li>
+                <li><a href="#">Behind the Pixels: Docuseries (Placeholder)</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2026 Rulex's Arcade — All placeholder content for now. Customize me later!
+    </footer>
+</body>
+</html>
