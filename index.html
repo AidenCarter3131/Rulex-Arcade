@@ -2,137 +2,141 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Rulex's Arcade</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rulex's Arcade</title>
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #0b1020;
-            color: #f5f5f5;
+        * {
+            box-sizing: border-box;
             margin: 0;
-        }
-
-        header {
-            background: #1b2340;
-            padding: 20px;
-            text-align: center;
-        }
-
-        header h1 {
-            margin: 0;
-        }
-
-        nav {
-            background: #141a33;
-            padding: 10px 20px;
-            display: flex;
-            gap: 15px;
-        }
-
-        nav a {
-            color: #f5f5f5;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        main {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-        }
-
-        section {
-            background: #1b2340;
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        section h2 {
-            margin-top: 0;
-        }
-
-        .card-list {
-            list-style: none;
             padding: 0;
-            margin: 0;
         }
 
-        .card-list li {
-            margin-bottom: 8px;
+        body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: #000;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-        .card-list a {
-            color: #9fd3ff;
-            text-decoration: none;
+        /* Starts completely hidden on a black screen */
+        .loading-screen {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
         }
 
-        .card-list a:hover {
-            text-decoration: underline;
+        /* Appears after 3 seconds */
+        .loading-screen.show {
+            opacity: 1;
         }
 
-        footer {
-            text-align: center;
-            padding: 15px;
-            background: #141a33;
-            margin-top: 20px;
+        .logo {
+            width: min(420px, 80vw);
+            max-height: 50vh;
+            object-fit: contain;
+            margin-bottom: 30px;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Loading bar background */
+        .loading-container {
+            width: min(350px, 75vw);
+            height: 18px;
+            background: #1a1a1a;
+            border: 2px solid #444;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        }
+
+        /* Loading progress */
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ffffff, #a8a8a8);
+            border-radius: 10px;
+        }
+
+        .loading-screen.show .loading-bar {
+            animation: load 4s ease-in-out forwards;
+        }
+
+        @keyframes load {
+            from {
+                width: 0%;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        .loading-text {
+            margin-top: 12px;
+            color: #ffffff;
             font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
     </style>
 </head>
+
 <body>
-    <header>
-        <h1>Rulex's Arcade</h1>
-        <p>Your hub for games, links, and movies/shows (placeholder version)</p>
-    </header>
 
-    <nav>
-        <a href="#games">Games</a>
-        <a href="#links">Links</a>
-        <a href="#movies">Movies/Shows</a>
-    </nav>
+    <!-- Loading screen -->
+    <main class="loading-screen" id="loadingScreen">
+        <img
+            class="logo"
+            src="https://aidencarter3131.github.io/Rulex-Arcade/R-11-7-2026.png"
+            alt="Rulex's Arcade"
+        >
 
-    <main>
-        <!-- Games Section -->
-        <section id="games">
-            <h2>Games</h2>
-            <p>Placeholder games you can later replace with real ones.</p>
-            <ul class="card-list">
-                <li><a href="#">Space Blaster (Coming Soon)</a></li>
-                <li><a href="#">Pixel Racer (Coming Soon)</a></li>
-                <li><a href="#">Rulex Quest RPG (Coming Soon)</a></li>
-            </ul>
-        </section>
+        <div class="loading-container">
+            <div class="loading-bar"></div>
+        </div>
 
-        <!-- Links Section -->
-        <section id="links">
-            <h2>Cool Links</h2>
-            <p>Random placeholder links for now.</p>
-            <ul class="card-list">
-                <li><a href="#">Official Rulex's Arcade Discord (Placeholder)</a></li>
-                <li><a href="#">High Score Leaderboard (Placeholder)</a></li>
-                <li><a href="#">Support & FAQ (Placeholder)</a></li>
-            </ul>
-        </section>
-
-        <!-- Movies/Shows Section -->
-        <section id="movies">
-            <h2>Movies & Shows</h2>
-            <p>Placeholder list of movies and shows you might feature.</p>
-            <ul class="card-list">
-                <li><a href="#">Arcade Legends: The Movie (Placeholder)</a></li>
-                <li><a href="#">Rulex's Retro Night Show (Placeholder)</a></li>
-                <li><a href="#">Behind the Pixels: Docuseries (Placeholder)</a></li>
-            </ul>
-        </section>
+        <p class="loading-text">Loading...</p>
     </main>
 
-    <footer>
-        &copy; 2026 Rulex's Arcade — All placeholder content for now. Customize me later!
-    </footer>
+    <!-- Startup sound -->
+    <audio
+        id="startupSound"
+        preload="auto"
+        src="https://aidencarter3131.github.io/Rulex-Arcade/Microsoft%20Windows%20Vista%20Startup%20Sound.mp3">
+    </audio>
+
+    <script>
+        // Keep the screen black for 3 seconds.
+        setTimeout(() => {
+            // Show the image and loading bar.
+            document.getElementById("loadingScreen").classList.add("show");
+
+            // Play the startup sound at the same time.
+            const startupSound = document.getElementById("startupSound");
+            startupSound.play().catch(() => {
+                console.log("Sound playback was blocked by the browser.");
+            });
+
+        }, 3000);
+    </script>
+
 </body>
 </html>
