@@ -1,832 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rulex Arcade 🎄 Christmas Edition</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rulex Arcade</title>
 <style>
-:root {
-  --bg-color: #70a1ff;
-  --panel-bg: rgba(20, 25, 40, 0.75);
-  --panel-border: rgba(255, 255, 255, 0.18);
-  --card-bg: rgba(30, 38, 56, 0.85);
-  --card-hover: rgba(45, 56, 82, 0.95);
-  --accent: #ff4757;
-  --accent-gold: #ffa502;
-  --accent-green: #2ed573;
-  --text-main: #ffffff;
-  --text-muted: #dcdde1;
-}
-
-*{box-sizing:border-box}
-
-/* Smooth 10-Second Light Blue <-> Grey Background Transition */
-html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  color: var(--text-main);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow-x: hidden;
-  animation: christmasBgTransition 10s ease-in-out infinite;
-}
-
-@keyframes christmasBgTransition {
-  0%, 100% {
-    background-color: #5352ed; /* Light Winter Blue */
-  }
-  50% {
-    background-color: #57606f; /* Cool Winter Grey */
-  }
-}
-
-/* Snowfall Canvas Overlay */
-#snowCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* App Container */
-#app {
-  position: relative;
-  z-index: 3;
-  min-height: 100vh;
-  padding: 24px 28px 120px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Header & Banner */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 16px 24px;
-  background: var(--panel-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--panel-border);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-}
-
-.brand-section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.brand-section img {
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
-}
-
-header h1 {
-  font-size: clamp(22px, 3.5vw, 32px);
-  margin: 0;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  background: linear-gradient(45deg, #ffffff, #ff4757, #ffa502);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-header .sub {
-  color: var(--text-muted);
-  font-size: 13px;
-  margin-top: 4px;
-  font-weight: 500;
-}
-
-/* Gallery Toolbar */
-.galleryTop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-}
-
-.galleryTop h2 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.search-bar-wrap {
-  display: flex;
-  gap: 10px;
-  flex: 1;
-  max-width: 450px;
-}
-
-.galleryTop input {
-  width: 100%;
-  background: var(--panel-bg);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--panel-border);
-  border-radius: 12px;
-  color: white;
-  padding: 12px 18px;
-  font-size: 14px;
-  outline: none;
-  transition: all 0.2s;
-}
-
-.galleryTop input:focus {
-  border-color: var(--accent-gold);
-  box-shadow: 0 0 12px rgba(255, 165, 2, 0.4);
-}
-
-.random-btn {
-  background: linear-gradient(135deg, var(--accent), var(--accent-gold));
-  border: none;
-  color: #fff;
-  font-weight: 700;
-  padding: 0 18px;
-  border-radius: 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.random-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 71, 87, 0.4);
-}
-
-/* Category Filter Tags */
-.tags {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  margin: 18px 0 24px;
-  padding-bottom: 6px;
-  scrollbar-width: none;
-}
-.tags::-webkit-scrollbar { display: none; }
-
-.tag {
-  background: var(--panel-bg);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--panel-border);
-  color: var(--text-muted);
-  padding: 8px 18px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.tag.active, .tag:hover {
-  background: #ffffff;
-  color: #111;
-  border-color: #ffffff;
-  transform: translateY(-1px);
-}
-
-.tag[data-cat="Favorites"].active {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-}
-
-/* Game Grid */
-#gameGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 18px;
-}
-
-.game {
-  position: relative;
-  border: 1px solid var(--panel-border);
-  background: var(--card-bg);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-}
-
-.game:hover {
-  transform: translateY(-5px);
-  border-color: var(--accent-gold);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.4);
-  background: var(--card-hover);
-}
-
-.game img {
-  width: 100%;
-  height: 125px;
-  display: block;
-  object-fit: cover;
-  background: #151821;
-}
-
-.game .gameName {
-  font-size: 14px;
-  font-weight: 700;
-  padding: 12px 14px 14px;
-  line-height: 1.3;
-}
-
-.favBtn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  font-size: 16px;
-  display: grid;
-  place-items: center;
-  z-index: 2;
-  transition: transform 0.2s, background 0.2s;
-}
-
-.favBtn.active {
-  color: var(--accent);
-  background: rgba(255,255,255,0.9);
-}
-
-.favBtn:hover {
-  transform: scale(1.15);
-}
-
-/* Player Panel */
-#playerPanel {
-  margin-top: 24px;
-  background: var(--panel-bg);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--panel-border);
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-}
-
-.playerTop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-
-.playerTop h2 {
-  margin: 0;
-  font-size: 22px;
-  color: #fff;
-}
-
-.playerActions {
-  display: flex;
-  gap: 10px;
-}
-
-.playerActions button {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid var(--panel-border);
-  color: #fff;
-  border-radius: 10px;
-  padding: 10px 16px;
-  cursor: pointer;
-  font-weight: 700;
-  transition: all 0.2s;
-}
-
-.playerActions button:hover {
-  background: rgba(255,255,255,0.25);
-  transform: translateY(-1px);
-}
-
-#playerFrameWrap {
-  width: 100%;
-  height: min(75vh, 800px);
-  min-height: 400px;
-  background: #000;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-#gameFrame {
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-/* Bottom Nav Menu */
-#menu {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 14px;
-  z-index: 100;
-  background: rgba(18, 22, 33, 0.85);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px 16px;
-  border-radius: 24px;
-  box-shadow: 0 12px 36px rgba(0,0,0,0.5);
-}
-
-.menuBtn {
-  width: 50px;
-  height: 50px;
-  border: 0;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.9);
-  color: #111;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.menuBtn:hover {
-  transform: translateY(-3px) scale(1.05);
-  background: #ffffff;
-  box-shadow: 0 6px 16px rgba(255,255,255,0.3);
-}
-
-.menuBtn.active {
-  background: var(--accent-gold);
-  color: #000;
-}
-
-.menuBtn svg {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-}
-
-/* Functional Settings Modal */
-#settingsModal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-
-#settingsModal.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.modalCard {
-  background: #191e2b;
-  border: 1px solid var(--panel-border);
-  border-radius: 20px;
-  padding: 28px;
-  width: min(480px, 90vw);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.modalHeader h3 {
-  margin: 0;
-  font-size: 22px;
-  color: #fff;
-}
-
-.closeModalBtn {
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.settingRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.settingRow label {
-  font-weight: 600;
-  font-size: 15px;
-}
-
-/* Custom Toggle Switch */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 46px;
-  height: 24px;
-}
-
-.switch input { opacity: 0; width: 0; height: 0; }
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  inset: 0;
-  background-color: #333;
-  transition: .2s;
-  border-radius: 24px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .2s;
-  border-radius: 50%;
-}
-
-input:checked + .slider { background-color: var(--accent-green); }
-input:checked + .slider:before { transform: translateX(22px); }
-
-/* Toast Notifications */
-#toast {
-  position: fixed;
-  bottom: 90px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: rgba(18, 22, 33, 0.95);
-  border: 1px solid var(--panel-border);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 30px;
-  font-weight: 600;
-  font-size: 14px;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  z-index: 200;
-}
-
-#toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* Performance Mode Override */
-body.low-end {
-  animation: none !important;
-  background: #3a4754 !important;
-}
-body.low-end #snowCanvas { display: none !important; }
-body.low-end * { transition: none !important; }
+:root{color-scheme:dark;--bg:#050505;--panel:#111;--line:#292929;--text:#f5f5f5;--muted:#aaa;--accent:#fff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}body{overflow-x:hidden}
+#intro{position:fixed;inset:0;background:#000;z-index:20;display:flex;align-items:center;justify-content:center;transition:opacity 1s ease;opacity:1}
+#brand{position:absolute;left:calc(50% + 50px);top:50%;transform:translate(-50%,-50%);width:min(420px,80vw);max-height:50vh;object-fit:contain;transition:all 1.2s ease}
+#loading{position:absolute;left:calc(50% + 30px);top:calc(50% + 133px);width:min(320px,65vw);height:6px;background:#242424;border-radius:8px;overflow:hidden;opacity:0;transition:opacity .4s}
+#loadFill{height:100%;width:0;background:#fff;border-radius:8px}
+#intro.done{opacity:0;pointer-events:none}#intro.done #brand{left:0;top:0;transform:translate(20px,20px);width:100px;max-height:70px}
+#intro.done #loading{opacity:0}
+#app{min-height:100vh;padding:24px 28px 100px;opacity:0;transition:opacity .7s}#app.ready{opacity:1}
+header{display:flex;align-items:center;gap:16px;min-height:72px}#smallLogo{width:100px;height:64px;object-fit:contain;visibility:hidden}header h1{font-size:clamp(25px,4vw,38px);margin:0;font-weight:800;letter-spacing:-1px}header .sub{color:var(--muted);font-size:13px;margin-top:5px}
+#menu{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:10;background:#121212;border:1px solid #303030;padding:10px 12px;border-radius:18px;box-shadow:0 8px 30px #000a}
+.menuBtn{width:48px;height:48px;border:0;border-radius:12px;background:#f4f4f4;color:#050505;display:grid;place-items:center;cursor:pointer;transition:transform .15s,background .15s}.menuBtn:hover{transform:translateY(-2px);background:#ddd}.menuBtn svg{width:23px;height:23px;fill:currentColor}
+#gallery{display:none;margin-top:25px}#gallery.show{display:block}.galleryTop{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}.galleryTop h2{margin:0;font-size:25px}.galleryTop input{background:#111;border:1px solid #333;border-radius:10px;color:white;padding:12px 14px;min-width:min(280px,100%);font-size:14px;outline:none}.galleryTop input:focus{border-color:#888}
+#gameGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:17px}.game{border:1px solid #262626;background:#101010;border-radius:13px;overflow:hidden;cursor:pointer;transition:transform .16s,border-color .16s;min-width:0}.game:hover{transform:translateY(-4px);border-color:#777}.game img{width:100%;height:120px;display:block;object-fit:cover;background:#222}.game .gameName{font-size:14px;font-weight:700;padding:12px 12px 14px;line-height:1.3}.empty{color:#aaa;padding:30px 0}
+#playerPanel{margin-top:26px}#playerPanel[hidden]{display:none}.playerTop{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.playerTop h2{margin:0;font-size:22px}.playerActions{display:flex;gap:8px;flex-wrap:wrap}.playerActions button{background:#171717;border:1px solid #444;color:#fff;border-radius:9px;padding:10px 13px;cursor:pointer;font-weight:700}.playerActions button:hover{background:#252525}#playerFrameWrap{width:100%;height:min(72vh,760px);min-height:360px;background:#000;border:1px solid #333;border-radius:12px;overflow:hidden}#gameFrame{width:100%;height:100%;border:0;background:#000}.embedNote{color:#aaa;font-size:13px;margin-top:10px}
+@media(max-width:600px){#app{padding:14px 14px 100px}#gameGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.game img{height:105px}.game .gameName{padding:10px;font-size:13px}#brand{left:50%;}}
 </style>
 </head>
 <body>
-
-<!-- Snowfall Effect Canvas -->
-<canvas id="snowCanvas"></canvas>
-
-<!-- App Content -->
-<main id="app">
-  <header>
-    <div class="brand-section">
-      <img src="https://aidencarter3131.github.io/Rulex-Arcade/R-11-7-2026.png" alt="Rulex Logo">
-      <div>
-        <h1>Rulex Arcade ❄️</h1>
-        <div class="sub">Holiday Special Edition • Pick a game and play!</div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Gallery Section -->
-  <section id="gallery">
-    <div class="galleryTop">
-      <h2>🎄 Game Library</h2>
-      <div class="search-bar-wrap">
-        <input id="search" type="search" placeholder="🔍 Search games..." aria-label="Search games">
-        <button id="randomBtn" class="random-btn">🎲 Surprise Me</button>
-      </div>
-    </div>
-
-    <!-- Category Filter Tags -->
-    <div class="tags" id="categoryTags">
-      <button class="tag active" data-cat="All">All Games</button>
-      <button class="tag" data-cat="Favorites">Favorites ♥</button>
-      <button class="tag" data-cat="Sports">Sports ⚽</button>
-      <button class="tag" data-cat="Action">Action ⚡</button>
-      <button class="tag" data-cat="Rhythm">Rhythm 🎵</button>
-      <button class="tag" data-cat="Casual">Casual 🎮</button>
-    </div>
-
-    <div id="gameGrid"></div>
-    <div id="empty" style="text-align:center; padding: 40px; color: var(--text-muted);" hidden>No games found matching your search.</div>
-  </section>
-
-  <!-- Embedded Game Player -->
-  <section id="playerPanel" hidden>
-    <div class="playerTop">
-      <h2 id="playerTitle">Game Player</h2>
-      <div class="playerActions">
-        <button id="fullscreenBtn" type="button">⛶ Fullscreen</button>
-        <button id="closeGameBtn" type="button">✕ Back to Library</button>
-      </div>
-    </div>
-    <div id="playerFrameWrap">
-      <iframe id="gameFrame" title="Game Player" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
-    </div>
-  </section>
-</main>
-
-<!-- Bottom Menu Bar -->
-<nav id="menu">
-  <button class="menuBtn" id="playBtn" title="Library">
-    <svg viewBox="0 0 24 24"><path d="M7 4.8c0-.8.9-1.3 1.6-.9l11 6.6a1.7 1.7 0 0 1 0 2.9l-11 6.6c-.7.4-1.6-.1-1.6-.9V4.8z"/></svg>
-  </button>
-  <button class="menuBtn" id="settingsBtn" title="Settings">
-    <svg viewBox="0 0 24 24"><path d="M19.4 13a7.8 7.8 0 0 0 0-2l2-1.5-2-3.5-2.4 1a7.7 7.7 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.7 7.7 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a7.8 7.8 0 0 0 0 2l-2 1.5 2 3.5 2.4-1a7.7 7.7 0 0 0 1.7 1L11 21h4l.4-2.9a7.7 7.7 0 0 0 1.7-1l2.4 1 2-3.5-2.1-1.6zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>
-  </button>
-</nav>
-
-<!-- Functional Settings Modal -->
-<div id="settingsModal">
-  <div class="modalCard">
-    <div class="modalHeader">
-      <h3>⚙️ Arcade Settings</h3>
-      <button class="closeModalBtn" id="closeSettingsModal">&times;</button>
-    </div>
-    <div class="settingRow">
-      <label for="snowToggle">❄️ Falling Snowfall</label>
-      <label class="switch">
-        <input type="checkbox" id="snowToggle" checked>
-        <span class="slider"></span>
-      </label>
-    </div>
-    <div class="settingRow">
-      <label for="perfToggle">⚡ Low Performance Mode</label>
-      <label class="switch">
-        <input type="checkbox" id="perfToggle">
-        <span class="slider"></span>
-      </label>
-    </div>
-    <div class="settingRow">
-      <label>🗑️ Clear Favorites</label>
-      <button id="clearFavsBtn" style="background:#ff4757; border:none; color:white; padding: 6px 14px; border-radius: 8px; font-weight: bold; cursor:pointer;">Reset</button>
+<div id="intro" aria-label="Rulex Arcade loading screen"><img id="brand" src="https://aidencarter3131.github.io/Rulex-Arcade/R-11-7-2026.png" alt="Rulex Arcade logo"><div id="loading"><div id="loadFill"></div></div></div>
+<main id="app"><header><img id="smallLogo" src="https://aidencarter3131.github.io/Rulex-Arcade/R-11-7-2026.png" alt=""><div><h1>Rulex Arcade</h1><div class="sub">Pick a game and have fun.</div></div></header>
+<section id="gallery" aria-label="Game library"><div class="galleryTop"><h2>Games</h2><input id="search" type="search" placeholder="Search games…" aria-label="Search games"></div><div id="gameGrid"></div><div id="empty" class="empty" hidden>No games match your search.</div></section>
+<section id="playerPanel" aria-label="Game player" hidden>
+  <div class="playerTop">
+    <h2 id="playerTitle">Game</h2>
+    <div class="playerActions">
+      <button id="fullscreenBtn" type="button">⛶ Fullscreen</button>
+      <button id="closeGameBtn" type="button">✕ Back to games</button>
     </div>
   </div>
-</div>
-
-<!-- Toast Popup -->
-<div id="toast">Notification</div>
-
+  <div id="playerFrameWrap">
+    <iframe id="gameFrame" title="Game player" allow="autoplay; fullscreen; gamepad" allowfullscreen
+      referrerpolicy="no-referrer"></iframe>
+  </div>
+  <p id="embedNote" class="embedNote" hidden>This game’s host may block being embedded. If it does not load here, that game may not support in-page play.</p>
+</section>
+</main>
+<nav id="menu" aria-label="Main menu"><button class="menuBtn" id="playBtn" title="Play" aria-label="Show games"><svg viewBox="0 0 24 24"><path d="M7 4.8c0-.8.9-1.3 1.6-.9l11 6.6a1.7 1.7 0 0 1 0 2.9l-11 6.6c-.7.4-1.6-.1-1.6-.9V4.8z"/></svg></button><button class="menuBtn" id="settingsBtn" title="Toggle sound" aria-label="Toggle sound"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.8 7.8 0 0 0 0-2l2-1.5-2-3.5-2.4 1a7.7 7.7 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.7 7.7 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a7.8 7.8 0 0 0 0 2l-2 1.5 2 3.5 2.4-1a7.7 7.7 0 0 0 1.7 1L11 21h4l.4-2.9a7.7 7.7 0 0 0 1.7-1l2.4 1 2-3.5-2.1-1.6zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg></button></nav>
+<audio id="startupAudio" preload="auto" src="https://aidencarter3131.github.io/Rulex-Arcade/Microsoft%20Windows%20Vista%20Startup%20Sound.mp3"></audio>
 <script>
-/* Fresh, clean copy of Sonic CD hosted on stable CDN */
-const games = [
-  {"name": "Sonic CD", "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/200940/header.jpg", "link": "https://cdn.jsdelivr.net/gh/TWS2401/Sonic-CD-WASM@main/index.html", "category": "Action"},
-  {"name": "Basket Random", "image": "https://imgs.crazygames.com/basket-random_16x9/20240617090207/basket-random_16x9-cover?metadata=none&quality=100&width=1200&height=630&fit=crop", "link": "https://proxysuniversity.github.io/games/basket-random.html", "category": "Sports"}, 
-  {"name": "Basketball Stars", "image": "https://imgs.crazygames.com/games/basketball-stars-2019/cover-1583231506155.png?metadata=none&quality=100&width=1200&height=630&fit=crop", "link": "https://proxysuniversity.github.io/games/basketball-stars.html", "category": "Sports"}, 
-  {"name": "Fruit Ninja", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTr2CiSaQTrHj-AmK2KbwScUzH7QgtAnHo_cEXZu7Bxr81x0UjDYTkyLeA&s=10", "link": "https://proxysuniversity.github.io/games/fruit-ninja.html", "category": "Casual"}, 
-  {"name": "Ragdoll Archers", "image": "https://imgs.crazygames.com/ragdoll-archers_16x9/20250926080758/ragdoll-archers_16x9-cover?metadata=none&quality=100&width=1200&height=630&fit=crop", "link": "https://proxysuniversity.github.io/games/ragdoll-archers.htm", "category": "Action"}, 
-  {"name": "Candy Crush", "image": "https://images5.alphacoders.com/855/thumb-1920-855983.jpg", "link": "https://proxysuniversity.github.io/games/candy-crush.html", "category": "Casual"}, 
-  {"name": "Death Run 3D", "image": "https://zapgames.io/cache/data/image/game/death-run-3d-f546x307.webp", "link": "https://proxysuniversity.github.io/games/death-run-3D.html", "category": "Action"}, 
-  {"name": "Happy Wheels", "image": "https://cdn.wallpapersafari.com/6/53/D7tQyp.png", "link": "https://proxysuniversity.github.io/games/happy-wheels.html", "category": "Action"}, 
-  {"name": "Slope", "image": "https://image.combat-online.net/images/slop.webp", "link": "https://proxysuniversity.github.io/games/slope.html", "category": "Casual"}, 
-  {"name": "Space Waves", "image": "https://i.ytimg.com/vi/0L885f9nUI8/maxresdefault.jpg", "link": "https://proxysuniversity.github.io/games/space-waves.html", "category": "Action"}, 
-  {"name": "Google Dinosaur Game", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRajet-a2Q2TUfwpMDkWq3AmTqnVpGcTbu7QIK7b1cRWue4kzTGXlFi77gx&s=10", "link": "https://proxysuniversity.github.io/games/google-dino.html", "category": "Casual"}, 
-  {"name": "Tag", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV0xge2VDjDmx4-naAGuRESi0j5okkaWMFXMD8kjEixGIIV09dhclzxNo&s=10", "link": "https://proxysuniversity.github.io/games/tag.html", "category": "Action"}, 
-  {"name": "Melon Playground", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKEHhe-9Vor2krkpW7TYOyNgdbtXZWw3XTZIitukBSwg&s=10", "link": "https://proxysuniversity.github.io/games/melon-playground.html", "category": "Action"}, 
-  {"name": "Drive Mad", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ6LOU6_Y9TcwdgnxOT_EnbOqUZCJWYxN_7jXlU-cwQENMEzaB78NgvNE&s=10", "link": "https://proxysuniversity.github.io/games/drive-mad.htm", "category": "Casual"}, 
-  {"name": "Chess", "image": "https://upload.wikimedia.org/wikipedia/commons/1/14/A_game_of_chess.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original", "link": "https://proxysuniversity.github.io/games/chess.html", "category": "Casual"}, 
-  {"name": "Bad Time Simulator", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcGB_gTaGs4TcPczLv7_uVcby0SH58ugbJ6j84QUnrdw&s", "link": "https://proxysuniversity.github.io/games/bad-time-simulator", "category": "Rhythm"}, 
-  {"name": "Jetpack Joyride", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYp_dYozmwwqCrkrpapn-A_k41EM1UTUTttod-T8HQTqgclViak0B7EZYU&s=10", "link": "https://proxysuniversity.github.io/games/jetpack-joyride.html", "category": "Casual"}, 
-  {"name": "Crossy Road", "image": "https://www.gamespot.com/wp-content/uploads/original/280/2802776/2765270-crossyroad.jpg", "link": "https://proxysuniversity.github.io/games/crossy-road.htm", "category": "Casual"}, 
-  {"name": "Hole.io", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMlW3suWkaBR1W6CeL5HulyhTesVP2V4SHNeyRfjro2A&s", "link": "https://proxysuniversity.github.io/games/hole-io.html", "category": "Casual"}, 
-  {"name": "Retro Bowl", "image": "https://coolgamesfree.org/data/image/game/retro-bowl-game-avata-at-coolgamesfree.org.jpg", "link": "https://proxysuniversity.github.io/games/retro-bowl.html", "category": "Sports"}, 
-  {"name": "Sonic Mania Plus", "image": "https://assetsio.gnwcdn.com/dhbsh_xuyaazdmr.jpg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp", "link": "https://vinmannie.github.io/SonicManiaWeb/RSDKv5.html", "category": "Action"}, 
-  {"name": "Friday Night Funkin'", "image": "https://external-preview.redd.it/by-the-way-friday-night-funkin-has-a-kickstarter-now-the-v0-RDylzmdyJWz9ylxIBF3VqJQMKTZYklSIiULSntgHyms.png?width=640&crop=smart&auto=webp&s=472ddca27bfd2fd35fe985b93ff6d9082846bb22", "link": "https://luckydog7.github.io/funkinmobile/game/index.html", "category": "Rhythm"}, 
-  {"name": "Minecraft", "image": "https://i.redd.it/cr3lvy59zu3d1.png", "link": "https://proxysuniversity.github.io/games/Eaglercraft_1.5.2_.html", "category": "Action"}
-];
-
-// State Variables
-let favs = JSON.parse(localStorage.getItem('rulex_favs') || '[]');
-let currentCat = 'All';
-let snowEnabled = localStorage.getItem('rulex_snow') !== 'false';
-let perfEnabled = localStorage.getItem('rulex_perf') === 'true';
-
-// UI Selectors
-const grid = document.getElementById('gameGrid');
-const search = document.getElementById('search');
-const empty = document.getElementById('empty');
-const toast = document.getElementById('toast');
-const settingsModal = document.getElementById('settingsModal');
-
-// Render Games Grid
-function renderGames() {
-  const term = search.value.trim().toLowerCase();
-  const filtered = games.filter(g => {
-    const matchesSearch = g.name.toLowerCase().includes(term);
-    const matchesCat = currentCat === 'All' ? true :
-                       currentCat === 'Favorites' ? favs.includes(g.name) :
-                       g.category === currentCat;
-    return matchesSearch && matchesCat;
-  });
-
-  grid.innerHTML = filtered.map(g => `
-    <article class="game" data-name="${g.name}">
-      <button class="favBtn ${favs.includes(g.name) ? 'active' : ''}" data-name="${g.name}">
-        ${favs.includes(g.name) ? '♥' : '♡'}
-      </button>
-      <img src="${g.image}" alt="${g.name}" loading="lazy">
-      <div class="gameName">${g.name}</div>
-    </article>
-  `).join('');
-
-  empty.hidden = filtered.length > 0;
+const games = [{"name": "Basket Random", "image": "https://imgs.crazygames.com/basket-random_16x9/20240617090207/basket-random_16x9-cover?metadata=none&quality=100&width=1200&height=630&fit=crop", "link": "https://proxysuniversity.github.io/games/basket-random.html", "description": "Basket Random is a chaotic, 2-player arcade sports video game developed by RHM Interactive and published by Playgama.", "hide": false}, {"name": "Basketball Stars", "image": "https://imgs.crazygames.com/games/basketball-stars-2019/cover-1583231506155.png?metadata=none&quality=100&width=1200&height=630&fit=crop", "link": "https://proxysuniversity.github.io/games/basketball-stars.html", "description": "", "hide": false}, {"name": "Fruit Ninja", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTr2CiSaQTrHj-AmK2KbwScUzH7QgtAnHo_cEXZu7Bxr81x0UjDYTkyLeA&s=10", "link": "https://proxysuniversity.github.io/games/fruit-ninja.html", "description": "", "hide": false}, {"name": "Ragdoll Archers", "image": "https://imgs.crazygames.com/ragdoll-archers_16x9/20250926080758/ragdoll-archers_16x9-cover?metadata=none&quality=100&width=1200&height=630&fit=crop", "link": "https://proxysuniversity.github.io/games/ragdoll-archers.htm", "description": "", "hide": false}, {"name": "Candy Crush", "image": "https://images5.alphacoders.com/855/thumb-1920-855983.jpg", "link": "https://proxysuniversity.github.io/games/candy-crush.html", "description": "", "hide": false}, {"name": "Death Run 3D", "image": "https://zapgames.io/cache/data/image/game/death-run-3d-f546x307.webp", "link": "https://proxysuniversity.github.io/games/death-run-3D.html", "description": "", "hide": false}, {"name": "Happy Wheels", "image": "https://cdn.wallpapersafari.com/6/53/D7tQyp.png", "link": "https://proxysuniversity.github.io/games/happy-wheels.html", "description": "", "hide": false}, {"name": "Slope", "image": "https://image.combat-online.net/images/slop.webp", "link": "https://proxysuniversity.github.io/games/slope.html", "description": "", "hide": false}, {"name": "Space Waves", "image": "https://i.ytimg.com/vi/0L885f9nUI8/maxresdefault.jpg", "link": "https://proxysuniversity.github.io/games/space-waves.html", "description": "", "hide": false}, {"name": "Get On Top", "image": "https://melonplaygroundgame.org/data/image/game/get-on-top.jpg", "link": "https://proxysuniversity.github.io/games/get-on-top.html", "description": "", "hide": false}, {"name": "Google Dinosaur Game", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRajet-a2Q2TUfwpMDkWq3AmTqnVpGcTbu7QIK7b1cRWue4kzTGXlFi77gx&s=10", "link": "https://proxysuniversity.github.io/games/google-dino.html", "description": "", "hide": false}, {"name": "Tag", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRV0xge2VDjDmx4-naAGuRESi0j5okkaWMFXMD8kjEixGIIV09dhclzxNo&s=10", "link": "https://proxysuniversity.github.io/games/tag.html", "description": "", "hide": false}, {"name": "Melon Playground", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKEHhe-9Vor2krkpW7TYOyNgdbtXZWw3XTZIitukBSwg&s=10", "link": "https://proxysuniversity.github.io/games/melon-playground.html", "description": "", "hide": false}, {"name": "Drive Mad", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ6LOU6_Y9TcwdgnxOT_EnbOqUZCJWYxN_7jXlU-cwQENMEzaB78NgvNE&s=10", "link": "https://proxysuniversity.github.io/games/drive-mad.htm", "description": "", "hide": false}, {"name": "Chess", "image": "https://upload.wikimedia.org/wikipedia/commons/1/14/A_game_of_chess.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original", "link": "https://proxysuniversity.github.io/games/chess.html", "description": "", "hide": false}, {"name": "Bad Time Simulator", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcGB_gTaGs4TcPczLv7_uVcby0SH58ugbJ6j84QUnrdw&s", "link": "https://proxysuniversity.github.io/games/bad-time-simulator", "description": "", "hide": false}, {"name": "Jetpack Joyride", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYp_dYozmwwqCrkrpapn-A_k41EM1UTUTttod-T8HQTqgclViak0B7EZYU&s=10", "link": "https://proxysuniversity.github.io/games/jetpack-joyride.html", "description": "", "hide": false}, {"name": "Crossy Road", "image": "https://www.gamespot.com/wp-content/uploads/original/280/2802776/2765270-crossyroad.jpg", "link": "https://proxysuniversity.github.io/games/crossy-road.htm", "description": "", "hide": false}, {"name": "Hole.io", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMlW3suWkaBR1W6CeL5HulyhTesVP2V4SHNeyRfjro2A&s", "link": "https://proxysuniversity.github.io/games/hole-io.html", "description": "", "hide": false}, {"name": "Madness: Project Nexus", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxCcoeF3-DXH_ZAmhOwp-LaEEF4Iij-1tszWcbh7OcWzcirZtgEewXMt8&s=10", "link": "https://proxysuniversity.github.io/games/madness-project-nexus.html", "description": "", "hide": false}, {"name": "Slope (2 Player)", "image": "https://slope-1.io/data/image/game/slope-2-player/slope-2-player.png", "link": "https://proxysuniversity.github.io/games/slope-2-player.html", "description": "Can't find this barley anywhere else, it will always be on Aaron Carter's Arcade!", "hide": false}, {"name": "Stick Fighter", "image": "https://stickfighter.io/images/stick-fighter.jpg", "link": "https://proxysuniversity.github.io/games/stick-fighter.html", "description": "", "hide": false}, {"name": "Plants Vs Zombies", "image": "https://static0.srcdn.com/wordpress/wp-content/uploads/2017/11/Plants-vs-Zombies-Logo.jpg?w=1200&h=675&fit=crop", "link": "https://proxysuniversity.github.io/games/plants-vs-zombies.html", "description": "", "hide": false}, {"name": "Football Legends", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQQ2z1Uu97JUPXXDsWqPFjaC4-Yv5B4L4DX6hKeYDpyb1Mtj_9lNkiq-E&s=10", "link": "https://proxysuniversity.github.io/games/football-legends.html", "description": "", "hide": false}, {"name": "Rooftop Snipers", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShgx9Qdcjg31MGwZordSKwyqw5zhOHYChdJ7OprX3tcsM4aRunyIn_x4qn&s=10", "link": "https://proxysuniversity.github.io/games/rooftop-snipers.htm", "description": "", "hide": false}, {"name": "Brotato", "image": "https://images6.alphacoders.com/135/1358945.png", "link": "https://bluegamemc.github.io/BrotatoWeb/", "description": "", "hide": false}, {"name": "Boxing Random", "image": "https://imgs.crazygames.com/games/boxing-random/cover-1622139160089.jpeg?metadata=none&quality=100&width=1200&height=630&fit=crop", "link": "https://proxysuniversity.github.io/games/boxing-random.htm", "description": "", "hide": false}, {"name": "Soccer Random", "image": "https://dino-chrome.com/soccer-random-game/4.jpg", "link": "https://proxysuniversity.github.io/games/soccer-random.htm", "description": "", "hide": false}, {"name": "Volley Random", "image": "https://images.sftcdn.net/images/t_app-cover-s,f_auto/p/75c22f11-deaf-4726-a0eb-1ce5c8490f8f/4140613165/volley-random-screenshot.webp", "link": "https://proxysuniversity.github.io/games/volley-random.html", "description": "", "hide": false}, {"name": "Run", "image": "https://preview.redd.it/pc-2005-2010-flash-game-like-run-sets-in-space-v0-ikzm5620elod1.jpeg?auto=webp&s=cbc476d4e533fc93ca1c59091d2b3b789ddc8710", "link": "https://proxysuniversity.github.io/games/run.html", "description": "", "hide": false}, {"name": "Red Ball 4 (Volume 1)", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyEhrjdA4OmkBoBTjCNH_0LpIWvHDIneUJsbAng1XKIMtWzY2z0a90AIQ&s=10", "link": "https://proxysuniversity.github.io/games/red-ball-4-vol-1.html", "description": "", "hide": false}, {"name": "World Hardest Game", "image": "https://www.coolmathgames.com/sites/default/files/WorldsHardestGame_OG-logo.jpg", "link": "https://proxysuniversity.github.io/games/worlds-hardest-game.html", "description": "", "hide": false}, {"name": "Football Bros", "image": "https://media.iogames.space/media/images/footballBros_364x208.png", "link": "https://proxysuniversity.github.io/games/football-bros.html", "description": "", "hide": false}, {"name": "Basket Bros", "image": "https://imgs.crazygames.com/basketbros_16x9/20251107022434/basketbros_16x9-cover?metadata=none&quality=60&height=5638", "link": "https://proxysuniversity.github.io/games/basket-bros.html", "description": "", "hide": false}, {"name": "Retro Bowl", "image": "https://coolgamesfree.org/data/image/game/retro-bowl-game-avata-at-coolgamesfree.org.jpg", "link": "https://proxysuniversity.github.io/games/retro-bowl.html", "description": "", "hide": false}, {"name": "Getaway Shootout", "image": "https://www.drifted.com/wp-content/uploads/2023/05/getaway-shootout-570-featured_16_9.jpg", "link": "https://bro-two.vercel.app/", "description": "Getaway Shootout is a chaotic, physics-based online and local multiplayer racing and parkour game developed by New Eich Games and released in August 2018.", "hide": false}, {"name": "Sonic Mania Plus", "image": "https://assetsio.gnwcdn.com/dhbsh_xuyaazdmr.jpg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp", "link": "https://vinmannie.github.io/SonicManiaWeb/RSDKv5.html", "description": "(uploader's note: MAIN MENU CRASHES!!!! Press (Esc) to use Dev Menu to access levels.)", "hide": false}, {"name": "Sonic Robo Blast 2", "image": "https://srb2wp-data.nyc3.cdn.digitaloceanspaces.com/wp-content/uploads/srb2-title.png", "link": "https://vinmannie.github.io/srb2web/", "description": "", "hide": false}, {"name": "Five Nights At Freddy's", "image": "https://mediaproxy.tvtropes.org/width/1200/https://static.tvtropes.org/pmwiki/pub/images/fnaf1_cover.png", "link": "https://sussygamedeveloper.github.io/FNAF1/", "description": "", "hide": false}, {"name": "Five Nights At Freddy's 2", "image": "https://mediaproxy.tvtropes.org/width/1200/https://static.tvtropes.org/pmwiki/pub/images/fnaf2_cover.png", "link": "https://sussygamedeveloper.github.io/FNAF2/", "description": "", "hide": false}, {"name": "Five Nights At Freddy's Ultimate Custom Night", "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/871720/header.jpg?t=1568143255", "link": "https://sussygamedeveloper.github.io/UCN-HTML5/", "description": "", "hide": false}, {"name": "Five Nights At Freddy's Sister Location", "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/506610/capsule_616x353.jpg?t=1579635985", "link": "https://catgenix22.github.io/FNAFSLcat.github.io/", "description": "", "hide": false}, {"name": "Karate Bros", "image": "https://lgames.littlegames.io/bgames/game_image/1764960928karate-bros.png", "link": "https://proxysuniversity.github.io/games/karate-bros.html", "description": "", "hide": false}, {"name": "Stickman Hook", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOh630CkB9hcGtvg2UzaoHWwBUnL5GhZ0e9BTuBaP0V8BFOPMVm8wFLKk&s=10", "link": "https://proxysuniversity.github.io/games/stickman-hook.html", "description": "", "hide": false}, {"name": "Soccer Bros", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQu5P_GRj2hHvqfDxBpXbCPganehAGjrn2vtXbDm_iaEA&s", "link": "https://proxysuniversity.github.io/games/soccer-bros.html", "description": "", "hide": false}, {"name": "Baseball Bros", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxoDS7IsOMnhLgmNJtiC5Wx9VjOvz9INT8bTL_ciflKPNQP1TwxXSnGWNo&s=10", "link": "https://proxysuniversity.github.io/games/baseball-bros.html", "description": "", "hide": false}, {"name": "Wrestle Bros", "image": "https://imgs.crazygames.com/wrestle-bros_16x9/20250320082313/wrestle-bros_16x9-cover?metadata=none&quality=60&height=5802", "link": "https://proxysuniversity.github.io/games/wrestle-bros.html", "description": "", "hide": false}, {"name": "Football Bros", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyS5GjO6AtZaveU7JvX0kwkqDdsdJjMfdg1GmaTJzhDPvU6eaSQd3CWXSm&s=10", "link": "https://proxysuniversity.github.io/games/football-bros.html", "description": "", "hide": false}, {"name": "Ping Pong Chaos", "image": "https://imgs.crazygames.com/ping-pong-chaos_16x9/20250414075429/ping-pong-chaos_16x9-cover?metadata=none&quality=100&width=1200&height=630&fit=crop", "link": "https://proxysuniversity.github.io/games/ping-pong-chaos.html", "description": "", "hide": false}, {"name": "Stack", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFGGnjPc2HLdWKnKmPAYUUgeLMeDaWJAk6WjnGWXXAQWNMLB5IyxaUjeU&s=10", "link": "https://proxysuniversity.github.io/games/stack.html", "description": "", "hide": false}, {"name": "3D Free Kick", "image": "https://imgs.crazygames.com/games/free-kick-classic/cover_16x9-1732743773302.png?metadata=none&quality=60&height=5736", "link": "https://proxysuniversity.github.io/games/3d-free-kick.html", "description": "", "hide": false}, {"name": "Dreadhead Parkour", "image": "https://i.ytimg.com/vi/_bxWHYcv4UA/maxresdefault.jpg", "link": "https://proxysuniversity.github.io/games/dreadhead-parkour.htm", "description": "", "hide": false}, {"name": "Friday Night Funkin' VS Whitty", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRC3zkyAVtD-3qrAmD2bW__77CfJeSLBoIB_7nwEPYB9BzUdpBaSAJt9Nh2&s=10", "link": "https://juicekidd.github.io/funkin/whitty/index.html", "description": "", "hide": false}, {"name": "Friday Night Funkin' VS Hex", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnyYPCaiv67x37cVPp40JwfjAu5PR458zs1D4lncIdOxEGFCVAXifry4w&s=10", "link": "https://vackyton.github.io/snipersite/hex/index.html", "description": "", "hide": false}, {"name": "Friday Night Funkin' VS Impostor (Version 3)", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoBMov8D1rSgdYvcWL_wEtlPK7RMz1uUJv8fMwMdheFg5kKO-92ccC9fek&s=10", "link": "https://twastinfg.github.io/FNF-Online-23/impostor-v3/", "description": "", "hide": false}, {"name": "Friday Night Funkin' (Mobile)", "image": "https://external-preview.redd.it/by-the-way-friday-night-funkin-has-a-kickstarter-now-the-v0-RDylzmdyJWz9ylxIBF3VqJQMKTZYklSIiULSntgHyms.png?width=640&crop=smart&auto=webp&s=472ddca27bfd2fd35fe985b93ff6d9082846bb22", "link": "https://luckydog7.github.io/funkinmobile/game/index.html", "description": "(This game is only supported for Mobile Touchscreen and not for PC nor the Keyboard controls)", "hide": false}, {"name": "Minecraft", "image": "https://i.redd.it/cr3lvy59zu3d1.png", "link": "https://proxysuniversity.github.io/games/Eaglercraft_1.5.2_.html", "description": "", "hide": false}, {"name": "Friday Night Funkin' VS Matt (Wii Funkin')", "image": "https://i.ytimg.com/vi/-PwWVpfLZ6A/maxresdefault.jpg", "link": "https://xlegends.github.io/moosyu.github.io/fnf/matt/index.html", "description": "", "hide": false}];
+const intro=document.getElementById('intro'),fill=document.getElementById('loadFill'),app=document.getElementById('app');
+const gallery=document.getElementById('gallery'),grid=document.getElementById('gameGrid'),search=document.getElementById('search'),empty=document.getElementById('empty');
+function renderGames(term=''){const filtered=games.filter(g=>!g.hide && g.name.toLowerCase().includes(term.trim().toLowerCase()));grid.innerHTML='';filtered.forEach(g=>{const card=document.createElement('article');card.className='game';card.tabIndex=0;card.setAttribute('role','link');card.setAttribute('aria-label','Play '+g.name);const img=document.createElement('img');img.src=g.image;img.alt='';img.loading='lazy';img.onerror=()=>{img.style.display='none'};const name=document.createElement('div');name.className='gameName';name.textContent=g.name;card.append(img,name);const open=()=>openGame(g);card.addEventListener('click',open);card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}});grid.append(card)});empty.hidden=filtered.length>0}
+function showGames(){gallery.hidden=false;gallery.classList.add('show');renderGames(search.value);gallery.scrollIntoView({behavior:'smooth',block:'start'})}
+function openGame(game){
+  if(!game || !game.link) return;
+  let url;
+  try { url = new URL(game.link, window.location.href); } catch { return; }
+  if(url.protocol !== 'https:' && url.protocol !== 'http:') return;
+  const panel=document.getElementById('playerPanel');
+  const frame=document.getElementById('gameFrame');
+  document.getElementById('playerTitle').textContent=game.name;
+  document.getElementById('embedNote').hidden=false;
+  frame.src=url.href;
+  panel.hidden=false;
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
-
-// Toast Popup
-function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2000);
+function closeGame(){
+  document.getElementById('gameFrame').src='about:blank';
+  document.getElementById('playerPanel').hidden=true;
+  gallery.scrollIntoView({behavior:'smooth',block:'start'});
 }
-
-// Grid Clicks (Open Game or Favorite)
-grid.addEventListener('click', (e) => {
-  const favBtn = e.target.closest('.favBtn');
-  if (favBtn) {
-    const name = favBtn.dataset.name;
-    if (favs.includes(name)) {
-      favs = favs.filter(f => f !== name);
-      showToast(`Removed "${name}" from Favorites`);
-    } else {
-      favs.push(name);
-      showToast(`Added "${name}" to Favorites ♥`);
-    }
-    localStorage.setItem('rulex_favs', JSON.stringify(favs));
-    renderGames();
-    return;
-  }
-
-  const card = e.target.closest('.game');
-  if (card) {
-    const game = games.find(g => g.name === card.dataset.name);
-    if (game) openGame(game);
-  }
+document.getElementById('closeGameBtn').addEventListener('click',closeGame);
+document.getElementById('fullscreenBtn').addEventListener('click',()=>{
+  const target=document.getElementById('playerFrameWrap');
+  if(target.requestFullscreen) target.requestFullscreen().catch(()=>{});
+  else if(target.webkitRequestFullscreen) target.webkitRequestFullscreen();
 });
-
-// Category Tag Switching
-document.getElementById('categoryTags').addEventListener('click', (e) => {
-  if(e.target.classList.contains('tag')) {
-    document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-    e.target.classList.add('active');
-    currentCat = e.target.dataset.cat;
-    renderGames();
-  }
-});
-
-// Search Filter
-search.addEventListener('input', renderGames);
-
-// Surprise Me (Random Game) Button
-document.getElementById('randomBtn').addEventListener('click', () => {
-  const randomGame = games[Math.floor(Math.random() * games.length)];
-  openGame(randomGame);
-  showToast(`Loading random game: ${randomGame.name}`);
-});
-
-// Game Player Controls
-function openGame(game) {
-  document.getElementById('playerTitle').textContent = game.name;
-  document.getElementById('gameFrame').src = game.link;
-  const panel = document.getElementById('playerPanel');
-  panel.hidden = false;
-  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+document.getElementById('playBtn').addEventListener('click',showGames);search.addEventListener('input',()=>renderGames(search.value));
+ document.getElementById('settingsBtn').addEventListener('click',()=>{const audio=document.getElementById('startupAudio');audio.muted=!audio.muted;document.getElementById('settingsBtn').setAttribute('aria-label',audio.muted?'Turn sound on':'Turn sound off')});
+// Keep the branded intro, while ensuring the app is never stuck if window load is delayed.
+function beginIntro(){
+  const loading=document.getElementById('loading');
+  const audio=document.getElementById('startupAudio');
+  // The loading bar fades in and fills during the intro.
+  setTimeout(()=>{loading.style.opacity='1';fill.style.transition='width 3.5s ease';fill.style.width='100%';},900);
+  // Startup sound cue; browser autoplay may require a prior interaction.
+  setTimeout(()=>{audio.volume=.55;audio.play().catch(()=>{});},4000);
+  // Move the logo to the upper-left and reveal the site content.
+  setTimeout(()=>{
+    document.getElementById('brand').style.left='0';
+    document.getElementById('brand').style.top='0';
+    document.getElementById('brand').style.transform='translate(20px,20px)';
+    document.getElementById('brand').style.width='100px';
+    document.getElementById('brand').style.maxHeight='70px';
+    document.getElementById('smallLogo').style.visibility='visible';
+    app.classList.add('ready');
+  },8000);
+  // Fade the intro overlay only after the logo has had time to move.
+  setTimeout(()=>{intro.classList.add('done');},9500);
 }
+renderGames('');
+beginIntro();
 
-document.getElementById('closeGameBtn').addEventListener('click', () => {
-  document.getElementById('gameFrame').src = 'about:blank';
-  document.getElementById('playerPanel').hidden = true;
-});
-
-document.getElementById('fullscreenBtn').addEventListener('click', () => {
-  const frameWrap = document.getElementById('playerFrameWrap');
-  if (frameWrap.requestFullscreen) frameWrap.requestFullscreen();
-  else if (frameWrap.webkitRequestFullscreen) frameWrap.webkitRequestFullscreen();
-});
-
-// Functional Settings Modal Logic
-document.getElementById('settingsBtn').addEventListener('click', () => {
-  settingsModal.classList.add('open');
-});
-
-document.getElementById('closeSettingsModal').addEventListener('click', () => {
-  settingsModal.classList.remove('open');
-});
-
-settingsModal.addEventListener('click', (e) => {
-  if (e.target === settingsModal) settingsModal.classList.remove('open');
-});
-
-// Settings Toggles
-const snowToggle = document.getElementById('snowToggle');
-snowToggle.checked = snowEnabled;
-snowToggle.addEventListener('change', (e) => {
-  snowEnabled = e.target.checked;
-  localStorage.setItem('rulex_snow', snowEnabled);
-  document.getElementById('snowCanvas').style.display = snowEnabled ? 'block' : 'none';
-});
-
-const perfToggle = document.getElementById('perfToggle');
-perfToggle.checked = perfEnabled;
-document.body.classList.toggle('low-end', perfEnabled);
-perfToggle.addEventListener('change', (e) => {
-  perfEnabled = e.target.checked;
-  localStorage.setItem('rulex_perf', perfEnabled);
-  document.body.classList.toggle('low-end', perfEnabled);
-});
-
-document.getElementById('clearFavsBtn').addEventListener('click', () => {
-  favs = [];
-  localStorage.removeItem('rulex_favs');
-  renderGames();
-  showToast("Favorites reset!");
-});
-
-// Snowfall Animation Logic
-const canvas = document.getElementById('snowCanvas');
-const ctx = canvas.getContext('2d');
-let width = canvas.width = window.innerWidth;
-let height = canvas.height = window.innerHeight;
-
-window.addEventListener('resize', () => {
-  width = canvas.width = window.innerWidth;
-  height = canvas.height = window.innerHeight;
-});
-
-const flakes = Array.from({ length: 45 }, () => ({
-  x: Math.random() * width,
-  y: Math.random() * height,
-  r: Math.random() * 3 + 1,
-  d: Math.random() * 1 + 0.5
-}));
-
-function drawSnow() {
-  if (!snowEnabled || perfEnabled) {
-    ctx.clearRect(0, 0, width, height);
-    requestAnimationFrame(drawSnow);
-    return;
-  }
-  ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-  ctx.beginPath();
-  flakes.forEach(f => {
-    ctx.moveTo(f.x, f.y);
-    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2, true);
-    f.y += f.d;
-    f.x += Math.sin(f.y / 30) * 0.5;
-    if (f.y > height) {
-      f.y = -10;
-      f.x = Math.random() * width;
-    }
-  });
-  ctx.fill();
-  requestAnimationFrame(drawSnow);
-}
-
-// Initial Launch
-renderGames();
-drawSnow();
 </script>
-</body>
-</html>
+</body></html>
