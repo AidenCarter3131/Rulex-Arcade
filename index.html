@@ -7,18 +7,20 @@
 :root{color-scheme:dark;--bg:#050505;--panel:#111;--line:#292929;--text:#f5f5f5;--muted:#aaa;--accent:#fff}
 *{box-sizing:border-box}
 
-/* Animated Background */
+/* Dark Grey/Black Flowing Line Pattern Background */
 html,body{margin:0;min-height:100%;color:var(--text);font-family:Arial,Helvetica,sans-serif}
 body{
   overflow-x:hidden;
-  background: linear-gradient(-45deg, #000000, #222222, #0a0a0a, #111111);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
+  background-color: #050505;
+  background-image: 
+    linear-gradient(90deg, rgba(40,40,40,0.4) 1px, transparent 1px),
+    linear-gradient(rgba(40,40,40,0.4) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: flowLines 12s linear infinite;
 }
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes flowLines {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 80px; }
 }
 
 /* Click to Start Overlay (Fixes Audio Autoplay) */
@@ -63,8 +65,8 @@ header{display:flex;align-items:center;gap:16px;min-height:72px}#smallLogo{width
 /* Player Panel */
 #playerPanel{margin-top:26px}#playerPanel[hidden]{display:none}.playerTop{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.playerTop h2{margin:0;font-size:22px}.playerActions{display:flex;gap:8px;flex-wrap:wrap}.playerActions button{background:#171717;border:1px solid #444;color:#fff;border-radius:9px;padding:10px 13px;cursor:pointer;font-weight:700}.playerActions button:hover{background:#252525}#playerFrameWrap{width:100%;height:min(72vh,760px);min-height:360px;background:#000;border:1px solid #333;border-radius:12px;overflow:hidden}#gameFrame{width:100%;height:100%;border:0;background:#000}.embedNote{color:#aaa;font-size:13px;margin-top:10px}
 
-/* Low-End Performance Mode overrides (Kills the animated background) */
-body.low-end { animation: none !important; background: var(--bg) !important; }
+/* Low-End Performance Mode overrides */
+body.low-end { animation: none !important; background-image: none !important; background: var(--bg) !important; }
 body.low-end * {transition:none !important;box-shadow:none !important}
 body.low-end .game:hover {transform:none !important}
 body.low-end .favBtn {backdrop-filter:none !important;background:#000}
@@ -137,8 +139,95 @@ body.low-end .favBtn {backdrop-filter:none !important;background:#000}
 <audio id="startupAudio" preload="auto" src="https://aidencarter3131.github.io/Rulex-Arcade/Microsoft%20Windows%20Vista%20Startup%20Sound.mp3"></audio>
 
 <script>
+// Inline code template for self-contained Sonic CD player with custom R Intro & Audio
+const sonicCdHtml = `<!doctype html>
+<html lang="en-us">
+	<head>
+        <base href="https://cdn.jsdelivr.net/gh/TWS2401/Sonic-CD-WASM@main/">
+		<meta charset="utf-8" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<title>Sonic CD</title>
+		<link type="text/css" rel="stylesheet" href="css/fonts.css" />
+		<style type="text/css">
+            body,html{font-family:arial,sans-serif;margin:0;padding:0;width:100%;height:100%;min-width:100%;min-height:100%;overflow:hidden;background-color:#000;text-align:center}
+            canvas{position:fixed!important;left:0!important;top:0!important;right:0!important;bottom:0!important;width:100vw!important;height:100vh!important;transform:none!important;transform-origin:center center!important;z-index:1!important;max-width:none!important;max-height:none!important;display:block!important;margin:0!important;padding:0!important;border:0 none!important;object-fit:fill;background-color:#000;-ms-interpolation-mode:nearest-neighbor;image-rendering:optimizeSpeed;image-rendering:-webkit-optimize-contrast;image-rendering:-moz-crisp-edges;image-rendering:-o-crisp-edges;image-rendering:crisp-edges;image-rendering:pixelated}
+            .spinner{height:30px;width:30px;margin:20px 0 0 20px;display:inline-block;vertical-align:top;-webkit-animation:rotation .8s linear infinite;animation:rotation .8s linear infinite;border-left:5px solid #ebebeb;border-right:5px solid #ebebeb;border-bottom:5px solid #ebebeb;border-top:5px solid #787878;border-radius:100%;background-color:#bdd72e}
+            @keyframes rotation{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+            #status{display:inline-block;vertical-align:top;margin-top:30px;margin-left:20px;font-weight:700;color:#787878}
+            #progress{height:20px;width:300px}
+            #output{width:100%;height:200px;margin:10px auto 0;border-left:0;border-right:0;padding-left:0;padding-right:0;display:block;background-color:#000;color:#fff;font-family:'Lucida Console',Monaco,monospace;outline:0}
+            
+            #r-intro-container {
+                position: fixed; inset: 0; z-index: 99999;
+                display: flex; align-items: center; justify-content: center;
+                background: #000; pointer-events: none;
+                animation: introContainerAnim 4s forwards;
+            }
+            #r-intro-logo {
+                width: min(300px, 60vw); object-fit: contain;
+                opacity: 0; transform: translateY(0);
+                animation: introLogoAnim 4s forwards;
+            }
+            @keyframes introLogoAnim {
+                0% { opacity: 0; transform: translateY(0); }
+                10% { opacity: 1; transform: translateY(20px); }
+                85% { opacity: 1; transform: translateY(20px); }
+                100% { opacity: 0; transform: translateY(20px); }
+            }
+            @keyframes introContainerAnim {
+                0%, 90% { opacity: 1; visibility: visible; }
+                100% { opacity: 0; visibility: hidden; }
+            }
+        </style>
+	</head>
+	<body>
+        <div id="r-intro-container">
+            <img id="r-intro-logo" src="https://aidencarter3131.github.io/Rulex-Arcade/R-11-7-2026.png" alt="R Logo">
+        </div>
+        <audio id="r-intro-audio" src="https://aidencarter3131.github.io/Rulex-Arcade/Microsoft%20Windows%20Vista%20Startup%20Sound.mp3" preload="auto"></audio>
+		<div class="spinner" id="spinner" style="display: none;"></div>
+		<div id="status" style="display: none;">Downloading...</div>
+		<progress id="progress" value="0" max="100" hidden="hidden"></progress>
+		<canvas id="canvas" onclick="window.focus();" oncontextmenu="event.preventDefault();"></canvas>
+        <script>
+        (function () {
+            var audio = document.getElementById("r-intro-audio");
+            if(audio) { audio.volume = 0.5; audio.play().catch(function(e){}); }
+            var gameCanvas = document.getElementById("canvas");
+            function forceFullGameVisible() {
+                var css = { position: "fixed", left: "0", top: "0", right: "0", bottom: "0", width: "100vw", height: "100vh", maxWidth: "none", maxHeight: "none", margin: "0", padding: "0", display: "block", transform: "none", zIndex: "1" };
+                Object.keys(css).forEach(function (key) { gameCanvas.style.setProperty(key.replace(/[A-Z]/g, function (m) { return "-" + m.toLowerCase(); }), css[key], "important"); });
+            }
+            forceFullGameVisible();
+            window.addEventListener("resize", forceFullGameVisible);
+            window.addEventListener("orientationchange", forceFullGameVisible);
+            if (window.ResizeObserver) new ResizeObserver(forceFullGameVisible).observe(document.documentElement);
+            setInterval(forceFullGameVisible, 500);
+        })();
+        <\/script>
+		<textarea id="output" style="display: none;" rows="8"></textarea>
+		<script type="text/javascript">
+            if("serviceWorker"in navigator){navigator.serviceWorker.register("sw.js").then(function(registration){}),function(err){}}
+            var statusElement=document.getElementById("status");var progressElement=document.getElementById("progress");var spinnerElement=document.getElementById("spinner");
+            var Module={
+                preRun:[], postRun:[],
+                print:function(){var element=document.getElementById("output");if(element)element.value="";return function(text){if(arguments.length>1)text=Array.prototype.slice.call(arguments).join(" ");console.log(text);if(element){element.value+=text+"\\n";element.scrollTop=element.scrollHeight}}}(),
+                printErr:function(text){if(arguments.length>1)text=Array.prototype.slice.call(arguments).join(" ");console.error(text)},
+                canvas:function(){var canvas=document.getElementById("canvas");canvas.addEventListener("webglcontextlost",function(e){alert("WebGL context lost. You will need to reload the page.");e.preventDefault()},false);return canvas}(),
+                setStatus:function(text){if(!Module.setStatus.last)Module.setStatus.last={time:Date.now(),text:""};if(text===Module.setStatus.last.text)return;var m=text.match(/([^(]+)\\((\\d+(\\.\\d+)?)\\/(\\d+)\\)/);var now=Date.now();if(m&&now-Module.setStatus.last.time<30)return;Module.setStatus.last.time=now;Module.setStatus.last.text=text;if(m){text=m[1];progressElement.value=parseInt(m[2])*100;progressElement.max=parseInt(m[4])*100;progressElement.hidden=false;spinnerElement.hidden=false}else{progressElement.value=null;progressElement.max=null;progressElement.hidden=true;if(!text)spinnerElement.style.display="none"}statusElement.innerHTML=text},
+                totalDependencies:0,
+                monitorRunDependencies:function(left){this.totalDependencies=Math.max(this.totalDependencies,left);Module.setStatus(left?"Preparing... ("+(this.totalDependencies-left)+"/"+this.totalDependencies+")":"All downloads complete.")}
+            };
+            Module.setStatus("Downloading...");
+            window.onerror=function(){Module.setStatus("Exception thrown, see JavaScript console");spinnerElement.style.display="none";Module.setStatus=function(text){if(text)Module.printErr("[post-exception status] "+text)}};
+        <\/script>
+		<script async="async" defer="defer" type="text/javascript" src="index.js"><\/script>
+	</body>
+</html>`;
+
 const games = [
-  {"name": "Sonic CD", "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/200940/header.jpg", "link": "sonic-cd.html", "description": "", "hide": false},
+  {"name": "Sonic CD", "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/200940/header.jpg", "link": "custom_sonic_cd", "description": "", "hide": false},
   {"name": "Basket Random", "image": "https://imgs.crazygames.com/basket-random_16x9/20240617090207/basket-random_16x9-cover?metadata=none&quality=100&width=1200&height=630&fit=crop", "link": "https://proxysuniversity.github.io/games/basket-random.html", "description": "", "hide": false}, 
   {"name": "Basketball Stars", "image": "https://imgs.crazygames.com/games/basketball-stars-2019/cover-1583231506155.png?metadata=none&quality=100&width=1200&height=630&fit=crop", "link": "https://proxysuniversity.github.io/games/basketball-stars.html", "description": "", "hide": false}, 
   {"name": "Fruit Ninja", "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTr2CiSaQTrHj-AmK2KbwScUzH7QgtAnHo_cEXZu7Bxr81x0UjDYTkyLeA&s=10", "link": "https://proxysuniversity.github.io/games/fruit-ninja.html", "description": "", "hide": false}, 
@@ -310,25 +399,32 @@ function showGames(){
 function openGame(game){
   if(!game || !game.link) return;
   
-  // Ensure the link is resolved relative to the current page location
-  let url;
-  try { 
-    url = new URL(game.link, window.location.href); 
-  } catch { 
-    return; 
-  }
-  
   const panel=document.getElementById('playerPanel');
+  const frame=document.getElementById('gameFrame');
   document.getElementById('playerTitle').textContent=game.name;
   document.getElementById('embedNote').hidden=false;
-  document.getElementById('gameFrame').src=url.href;
+  
+  if (game.link === 'custom_sonic_cd') {
+    frame.srcdoc = sonicCdHtml;
+  } else {
+    let url;
+    try { 
+      url = new URL(game.link, window.location.href); 
+    } catch { 
+      return; 
+    }
+    frame.removeAttribute('srcdoc');
+    frame.src = url.href;
+  }
   
   panel.hidden=false;
   panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function closeGame(){
-  document.getElementById('gameFrame').src='about:blank';
+  const frame=document.getElementById('gameFrame');
+  frame.src='about:blank';
+  frame.removeAttribute('srcdoc');
   document.getElementById('playerPanel').hidden=true;
   gallery.scrollIntoView({behavior:'smooth',block:'start'});
 }
